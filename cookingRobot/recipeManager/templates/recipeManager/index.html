@@ -17,22 +17,74 @@
 
         <!-- Header -->
         <header class="w3-container w3-red">
-            <h1>Header</h1>
+            <h1>Welcome to Recipes Manager!</h1>
         </header>
+        <div class="w3-bar w3-black">
+            <a href="#" class="w3-bar-item w3-button">Home</a>
+            <a href="#" class="w3-bar-item w3-button">Link 1</a>
+            <a href="#" class="w3-bar-item w3-button">Link 2</a>
+            <a href="#" class="w3-bar-item w3-button">Link 3</a>
+        </div> 
 
-        <!-- Page content -->
+        <!-- Search Box -->
         <div class="w3-content" style="max-width:1100px">
+            <div class="w3-container">
+                <form class="w3-panel">
+                    {% csrf_token %}
+                    <label for="searchItem">Search in:</label>
+                    <select id="search" name="search">
+                        <option value="recipeName">Recipe Name</option>
+                        <option value="category">Category</option>
+                        <option value="chefName">Representer</option>
+                    </select>
+                    <input type="text" id="searchFor" name="searchFor" value="Type Here!">
+                    <input type="submit" value="Submit">
+                </form>                  
+            </div>
 
-            {% if obj %}
-                <ul>
-                    {% for item in obj %}
-                        <li>{{ item.recipeName }}</li>
-                    {% endfor %}
-                </ul>
-            {% else %}
-                <p>TTTTTTTTTTT.</p>
-            {% endif %}
-        
+            <!-- Sorting Box -->
+            <div class="w3-container">
+                <form class="w3-panel" method="post">
+                    {% csrf_token %}
+                    <label for="sortItem">Sort By:</label>
+                    <select id="sort" name="sort">
+                        <option value="default">----</option>
+                        <option value="recipeName">Recipe Name</option>
+                        <option value="category">Category</option>
+                        <option value="duration">Time Duration</option>
+                        <option value="calories">Calories</option>
+                        <option value="servings">Servings</option>
+                        <option value="chefName">Representer</option>
+                    </select>
+                    <input type="submit" value="Submit">
+                </form>                  
+            </div>
+
+
+            <!-- Page content -->
+            <div class="w3-container">
+                {% if items %}
+                    <ul>
+                        {% for item in items %}
+                            <div class="w3-panel w3-blue w3-card-4">
+                                <p>Recipe ID: #{{ item.recipeID }}</p>
+                                <p>Food Name: {{ item.recipeName }}</p>
+                                <p>Category: {{ item.category }}</p>
+                                <p>Ingredients:</p>
+                                <p>{{ item.ingredient }}</p>
+                                <p>Time Duration: {{ item.duration }}</p>
+                                <p>Steps:</p>
+                                <p>{{ item.steps }}</p>
+                                <p>Calorie: {{ item.calories }} C</p>
+                                <p>Servings: {{ item.servings }}</p>
+                                <p>Introduced by: {{ item.chefName }}</p>
+                            </div>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p>Nothing!!!!.</p>
+                {% endif %}
+            </div>
         <!-- End page content -->
         </div>
 

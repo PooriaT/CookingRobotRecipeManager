@@ -12,7 +12,8 @@ class UserProfile(models.Model):
 class Recipe(models.Model):
     recipeID = models.AutoField(primary_key=True)
     recipeName = models.TextField(max_length=50)
-    ingredient = models.TextField(max_length=200)
+    category = models.TextField(max_length=50, default='')
+    ingredient = models.TextField(max_length=400)
     duration = models.DurationField()
     steps = models.TextField(max_length=2000)
     calories = models.FloatField()

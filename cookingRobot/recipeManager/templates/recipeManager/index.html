@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Recipe Cooking Robot Manager</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="/static/recipeManager/css/w3.css">
+        
+        <!-- style>
+            body {font-family: "Times New Roman", Georgia, Serif;}
+            h1, h2, h3, h4, h5, h6 {
+            font-family: "Playfair Display";
+            letter-spacing: 5px;
+            }
+        </style -->
+    </head>
+    <body>
+
+        <!-- Header -->
+        <header class="w3-container w3-red">
+            <h1>Welcome to Recipes Manager!</h1>
+        </header>
+        <div class="w3-bar w3-black">
+            <div class="w3-container w3-left">
+                <a href="/recipeManager/" class="w3-bar-item w3-button w3-margin-top">Home</a>
+                <a href="#" class="w3-bar-item w3-button w3-margin-top">Link 1</a>
+                <a href="#" class="w3-bar-item w3-button w3-margin-top">Link 2</a>
+                <a href="#" class="w3-bar-item w3-button w3-margin-top">Link 3</a>
+            </div>
+            <!-- Search Box -->
+            <div class="w3-container w3-right">
+                <form class="w3-panel" method="post">
+                    {% csrf_token %}
+                    <label for="searchItem">Search in:</label>
+                    <select id="search" name="search">
+                        <option value="recipeName">Recipe Name</option>
+                        <option value="category">Category</option>
+                        <option value="chefName">Representer</option>
+                    </select>
+                    <input type="text" id="searchFor" name="searchFor" value="Type Here!">
+                    <input class="w3-button" type="submit" name="searchSubmit" value="Submit">
+                </form>                  
+            </div>
+        </div> 
+
+        
+        <div class="w3-content" style="max-width:1100px">
+            
+
+            <!-- Sorting Box -->
+            <div class="w3-container w3-margin-top w3-lime w3-half">
+                <form class="w3-panel w3-row" method="post">
+                    {% csrf_token %}
+                    <label class="w3-large w3-col s2" for="sortItem">Sort By:</label>
+                    <select class="w3-input w3-col s6" id="sort" name="sort">
+                        <option value="default">----</option>
+                        <option value="recipeName">Recipe Name</option>
+                        <option value="category">Category</option>
+                        <option value="duration">Time Duration</option>
+                        <option value="calories">Calories</option>
+                        <option value="servings">Servings</option>
+                        <option value="chefName">Representer</option>
+                    </select>
+                    <input class="w3-btn w3-right w3-black w3-col s3" type="submit" name="sortSubmit" value="Submit">
+                </form>                  
+            </div>
+
+
+            <!-- Page content -->
+            <div class="w3-container">
+                {% if items %}
+                    <ul>
+                        {% for item in items %}
+                            <div class="w3-panel w3-blue w3-card-4">
+                                <p><b>Recipe ID: #</b> {{ item.recipeID }}</p>
+                                <p><b>Food Name:</b> {{ item.recipeName }}</p>
+                                <p><b>Category:</b> {{ item.category }}</p>
+                                <p><b>Ingredients:</b></p>
+                                <p>
+                                    {{item.ingredient|linenumbers|linebreaksbr }}
+                                </p>
+                                <p><b>Time Duration:</b> {{ item.duration }}</p>
+                                <p><b>Steps:</b></p>
+                                <p>{{ item.steps|linebreaksbr }}</p>
+                                <p><b>Calorie:</b> {{ item.calories }} C</p>
+                                <p><b>Servings:</b> {{ item.servings|floatformat:"0" }}</p>
+                                <p><b>Introduced by:</b> {{ item.chefName }}</p>
+                            </div>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p class="w3-panel w3-red">No Entry!!!!.</p>
+                {% endif %}
+            </div>
+        <!-- End page content -->
+        </div>
+
+        <!-- Footer -->
+        <footer class="w3-center w3-light-grey w3-padding-32">
+            <p>Powered by CatDog Team</p>
+        </footer>
+
+    </body>
+</html>

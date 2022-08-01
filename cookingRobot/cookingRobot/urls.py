@@ -17,6 +17,6 @@ from django.contrib import admin
 from django.urls import path, include
 
 urlpatterns = [
-    path('recipeManager/', include('recipeManager.urls')),
+    path('', include('recipeManager.urls')),
     path('admin/', admin.site.urls),
 ]

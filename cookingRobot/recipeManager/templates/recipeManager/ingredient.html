@@ -14,7 +14,7 @@
             <h1 class="w3-bar-item">&#127858 Welcome to Recipes Manager{{name}}!</h1>
             {% if loginStat %}
                 <div >
-                    <a href="login/" class="w3-bar-item w3-block w3-mobile w3-padding-32 w3-right">Login/Sign up!</a>
+                    <a href="/login/" class="w3-bar-item w3-block w3-mobile w3-padding-32 w3-right">Login/Sign up!</a>
                 </div>
             {% else %}
                 <a href={% url 'logout' %} class="w3-bar-item w3-block w3-mobile w3-padding-32 w3-right">Logout!</a>
@@ -23,10 +23,7 @@
         <div class="w3-bar w3-black">
             <div class="w3-panel w3-left">
                 <a href="/" class="w3-bar-item w3-button"><i class="w3-large fa fa-home"></i></a>
-                <a href="#" class="w3-bar-item w3-button">New Recipe</a>
-                <a href="ingredient/" class="w3-bar-item w3-button ">Ingredients</a>
-                <a href="#" class="w3-bar-item w3-button">Lists</a>
-                <a href="utensil/" class="w3-bar-item w3-button">Utensils</a>
+                <a href="newitem/" class="w3-bar-item w3-button">New ingredient</a>
             </div>
             <!-- Search Box -->
             <div class="w3-container w3-right">
@@ -69,29 +66,7 @@
 
             <!-- Page content -->
             <div class="w3-container">
-                {% if items %}
-                    <ul>
-                        {% for item in items %}
-                            <div class="w3-panel w3-blue w3-card-4">
-                                <p><b>Recipe ID: #</b> {{ item.recipeID }}</p>
-                                <p><b>Food Name:</b> {{ item.recipeName }}</p>
-                                <p><b>Category:</b> {{ item.category }}</p>
-                                <p><b>Ingredients:</b></p>
-                                <p>
-                                    {{item.ingredient|linenumbers|linebreaksbr }}
-                                </p>
-                                <p><b>Time Duration:</b> {{ item.duration }}</p>
-                                <p><b>Steps:</b></p>
-                                <p>{{ item.steps|linebreaksbr }}</p>
-                                <p><b>Calorie:</b> {{ item.calories }} C</p>
-                                <p><b>Servings:</b> {{ item.servings|floatformat:"0" }}</p>
-                                <p><b>Introduced by:</b> {{ item.chefName }}</p>
-                            </div>
-                        {% endfor %}
-                    </ul>
-                {% else %}
-                    <p class="w3-panel w3-red">No Entry!!!!.</p>
-                {% endif %}
+               {{message}}
             </div>
         <!-- End page content -->
         </div>

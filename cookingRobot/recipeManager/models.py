@@ -1,24 +1,52 @@
-from enum import unique
-from unittest.util import _MAX_LENGTH
+from unicodedata import category
 from django.db import models
+from django.contrib.auth.models import User
 
-# Here we create tables for our DB.
 
-#UserProfile Class -> referring to user information 
-class UserProfile(models.Model):
-    pass
+
+#This make the email field unique for each created user
+User._meta.get_field('email')._unique = True
+
+
+#Ingredient Category Class
+class IngredientCategory(models.Model):
+    ingredientCategoryID = models.AutoField(primary_key=True)
+    ingredientCategoryName = models.CharField(max_length=50)
+
+#Ingredient class
+class Ingredient(models.Model):
+    ingredientID = models.AutoField(primary_key=True)
+    ingredientName = models.CharField(max_length=50)
+    baseCalorie = models.FloatField()
+    ingredientCategory = models.ForeignKey('IngredientCategory', on_delete=models.CASCADE)
+    ingredientImg = models.ImageField(upload_to ='ingredient/', blank=True, null=True)
+
+#Utensils Class
+class Utensil(models.Model):
+    utensilID = models.AutoField(primary_key=True)
+    utensilName = models.CharField(max_length=50)
+    utensilImg = models.ImageField(upload_to ='utensil', blank=True, null=True) 
+    
+#Category class
+class RecipeCategory(models.Model):
+    categoryID = models.AutoField(primary_key=True)
+    categoryName = models.CharField(max_length=50) 
 
 #Recipe Class -> Referring to recipe information
 class Recipe(models.Model):
     recipeID = models.AutoField(primary_key=True)
-    recipeName = models.TextField(max_length=50)
-    category = models.TextField(max_length=50, default='')
-    ingredient = models.TextField(max_length=400)
+    recipeName = models.CharField(max_length=50) 
+    category = models.ManyToManyField(RecipeCategory, related_name="recipeCategory")
+    ingredient = models.ManyToManyField(Ingredient, related_name="ingredients")
+    ingredientAmount = models.JSONField()
+    utensil = models.ManyToManyField(Utensil, related_name="utensils", blank=True)
     duration = models.DurationField()
-    steps = models.TextField(max_length=2000)
-    calories = models.FloatField()
+    steps = models.TextField(max_length=3000)
     servings = models.FloatField()
-    chefName = models.TextField(max_length=50, default='ADMIN')
+    calories = models.FloatField()
+    rating = models.IntegerField(default=0)
+    recipeImg = models.ImageField(upload_to ='recipe/', blank=True, null=True)
+    chefName = models.CharField(max_length=50, default='admin')
     
     
 

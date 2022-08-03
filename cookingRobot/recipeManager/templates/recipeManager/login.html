@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Recipe Cooking Robot Manager</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="/static/recipeManager/css/w3.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    </head>
+    <body>
+
+        <!-- Header -->
+        <header class="w3-container w3-bar w3-red">
+            <h1 class="w3-bar-item">&#127858 Welcome to Recipes Manager!</h1>
+        </header>
+        <div class="w3-bar w3-black w3-border">
+            <a href="/" class="w3-bar-item w3-button w3-mobile"><i class="w3-large fa fa-home"></i></a>
+        </div>
+        
+
+        
+        <div class="w3-content" style="max-width:1100px">
+            <!-- Page content -->
+            <div class="w3-container w3-margin-top w3-margin-bottom">
+                <div class="w3-container w3-lime">
+                    <h2>Login to your account</h2>
+                </div>
+                <form class="w3-container w3-card-4" method="post">
+                    {% csrf_token %}
+                    <p>
+                        <input class="w3-input" type="text" style="width:90%" name="username" required>
+                        <label>Username</label>
+                    </p>
+                    <p>
+                        <input class="w3-input" type="password" style="width:90%" name="password" required>
+                        <label>Password</label>
+                    </p>
+                    {% if message %}
+                        <div class="w3-panel w3-red">
+                            <p><b>{{ message }}</b></p>
+                        </div>  
+                    {% endif %}
+                    <p>
+                        <label>Haven't yet signed up?</label>
+                        <a href="/register" class = "w3-text-blue">Sign up!</a>
+                    </p>
+                    <p>
+                        <a href="#" class = "w3-text-blue">Forget password?</a>
+                    </p>
+                    <p>
+                        <button type="submit" value="login" class="w3-button w3-section w3-teal w3-ripple"> Log in </button>
+                    </p>
+                    
+                </form>
+            </div>
+        <!-- End page content -->
+        </div>
+
+        <!-- Footer -->
+        <footer class="w3-center w3-light-grey w3-padding-32">
+            <p>Powered by Pooria and Armin</p>
+        </footer>
+
+    </body>
+</html>

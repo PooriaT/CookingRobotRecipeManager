@@ -48,6 +48,26 @@ def index(request):
     return HttpResponse(template.render(context, request))
 
 ########################################
+#The function related to adding new Ingredient 
+def newRecipe(request):
+    message = "I am an empty new recipe page!!!!!!!!!!!"
+    user_fname = ', Guest'
+    login_stat = True
+    if request.user.is_authenticated:
+        user_fname = ', ' + request.user.get_short_name()
+        login_stat = False
+    template = loader.get_template('recipeManager/newRecipe.html')
+    
+    context = {
+        'loginStat' : login_stat,
+        'name' : user_fname,
+        'message' : message,
+    }
+    
+    return HttpResponse(template.render(context, request))
+    
+
+########################################
 #Query for Ingredients
 def ingredient(request):
     message = "I am empty!!!!!!!!!!!1"
@@ -112,6 +132,11 @@ def newIngredient(request):
 def utensil(request):
     message = ""
     allUtensil = Utensil.objects.all()
+    
+    #Check the search request
+    if request.POST:
+        searchFor = request.POST['searchFor']
+        allUtensil = allUtensil.filter(utensilName__contains=searchFor) 
     
     if not allUtensil:
         message = "There is no entry for utensil!!!"

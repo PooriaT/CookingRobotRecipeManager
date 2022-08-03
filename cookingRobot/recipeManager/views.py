@@ -6,12 +6,17 @@ from django.http import HttpResponse
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 
+from .models import IngredientCategory
+from .models import Ingredient
+from .models import Utensil
 from .models import Recipe
+from .models import RecipeCategory
 from .models import List
 
-
+########################################
+#Homepage 
 def index(request):
-    allObjs = Recipe.objects.all()
+    allObjs = {}#Recipe.objects.all()
     
     user_fname = ', Guest'
     login_stat = True
@@ -43,6 +48,92 @@ def index(request):
     return HttpResponse(template.render(context, request))
 
 ########################################
+#Query for Ingredients
+def ingredient(request):
+    message = "I am empty!!!!!!!!!!!1"
+    user_fname = ', Guest'
+    login_stat = True
+    if request.user.is_authenticated:
+        user_fname = ', ' + request.user.get_short_name()
+        login_stat = False
+    template = loader.get_template('recipeManager/ingredient.html')
+    
+    context = {
+        'loginStat' : login_stat,
+        'name' : user_fname,
+        'message' : message,
+    }
+    
+    return HttpResponse(template.render(context, request))
+
+########################################
+#The function related to adding new Ingredient 
+def newIngredient(request):
+    message = ""
+    allIngredientCategory = IngredientCategory.objects.all()
+    
+    user_fname = ', Guest'
+    login_stat = True
+    if request.user.is_authenticated:
+        user_fname = ', ' + request.user.get_short_name()
+        login_stat = False
+    
+    #This is what we get from user    
+    if request.POST:
+        print(request.POST)
+        name = request.POST['ingredientName']
+        baseCal = request.POST['baseCalorie']
+        category = request.POST['ingredientCategory']
+        imageDir = request.POST['ingredientImg']
+        
+        if not isfloat(baseCal):
+            message = "You entered the wrong value for Base Calorie!"
+        else:
+            newItem = Ingredient.objects.create(ingredientName = name,
+                                                      baseCalorie = baseCal,
+                                                      ingredientCategory = IngredientCategory.objects.get(ingredientCategoryName = category),
+                                                      ingredientImg = imageDir)
+            newItem.save()
+            return redirect('ingredient') 
+        
+    template = loader.get_template('recipeManager/newIngredient.html')
+    
+    context = {
+        'loginStat' : login_stat,
+        'name' : user_fname,
+        'allIngredientCategory' : allIngredientCategory,
+        'message' : message,
+    }
+    
+    return HttpResponse(template.render(context, request))
+
+
+#This function is used to show all utensil 
+def utensil(request):
+    message = ""
+    allUtensil = Utensil.objects.all()
+    
+    if not allUtensil:
+        message = "There is no entry for utensil!!!"
+    user_fname = ', Guest'
+    login_stat = True
+    if request.user.is_authenticated:
+        user_fname = ', ' + request.user.get_short_name()
+        login_stat = False
+        
+    template = loader.get_template('recipeManager/utensil.html')
+    
+    context = {
+        'loginStat' : login_stat,
+        'name' : user_fname,
+        'allUtensil' : allUtensil,
+        'message' : message,
+    }
+    
+    return HttpResponse(template.render(context, request))
+
+#################################################
+########################################
 #This is the sorting function to re order the data illustration
 def sortByItem(item, allItems):
     allItems = allItems.order_by(item)
@@ -62,12 +153,15 @@ def searchItem(item, searchFor, allItems):
     
     return allItems
 
+
+
+############################################3
 ########################################
 #Creating the login page 
 def loginFunc(request):
     message = ""
+    #This is what we get from user 
     if request.POST:
-        print(request.POST)
         username = request.POST['username']
         password = request.POST['password']
         user = authenticate(request, username=username, password=password)
@@ -95,9 +189,9 @@ def logoutFunc(request):
 #Creating the registration page 
 def register(request):
     message = ""
-    
     allUser = User.objects.all()
     
+    #This is what we get from user 
     if request.POST:
         first_name = request.POST['firstname']
         last_name = request.POST['lastname']
@@ -121,3 +215,18 @@ def register(request):
         'message': message,
     }
     return HttpResponse(template.render(context, request))
+
+
+
+#############################################
+#############################################
+#Additional Functions
+#############################################
+
+#isfloat():
+def isfloat(num):
+    try:
+        float(num)
+        return True
+    except ValueError:
+        return False

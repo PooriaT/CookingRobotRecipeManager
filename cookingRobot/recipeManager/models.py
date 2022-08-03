@@ -18,15 +18,14 @@ class Ingredient(models.Model):
     ingredientID = models.AutoField(primary_key=True)
     ingredientName = models.CharField(max_length=50)
     baseCalorie = models.FloatField()
-    baseScaling = models.CharField(max_length=10)
     ingredientCategory = models.ForeignKey('IngredientCategory', on_delete=models.CASCADE)
-    ingredientImg = models.ImageField(upload_to ='media/ingredient', blank=True, null=True)
+    ingredientImg = models.ImageField(upload_to ='ingredient/', blank=True, null=True)
 
 #Utensils Class
 class Utensil(models.Model):
     utensilID = models.AutoField(primary_key=True)
     utensilName = models.CharField(max_length=50)
-    utensilImg = models.ImageField(upload_to ='media/utensil', blank=True, null=True)
+    utensilImg = models.ImageField(upload_to ='utensil', blank=True, null=True) 
     
 #Category class
 class RecipeCategory(models.Model):
@@ -46,7 +45,7 @@ class Recipe(models.Model):
     servings = models.FloatField()
     calories = models.FloatField()
     rating = models.IntegerField(default=0)
-    recipeImg = models.ImageField(upload_to ='media/recipe', blank=True, null=True)
+    recipeImg = models.ImageField(upload_to ='recipe/', blank=True, null=True)
     chefName = models.CharField(max_length=50, default='admin')
     
     

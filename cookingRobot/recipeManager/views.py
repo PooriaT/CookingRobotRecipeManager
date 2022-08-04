@@ -56,31 +56,54 @@ def newRecipe(request):
     if request.user.is_authenticated:
         user_fname = ', ' + request.user.get_short_name()
         login_stat = False
-    template = loader.get_template('recipeManager/newRecipe.html')
+        template = loader.get_template('recipeManager/newRecipe.html')
+        
+        context = {
+            'loginStat' : login_stat,
+            'name' : user_fname,
+            'message' : message,
+        }
+        
+        return HttpResponse(template.render(context, request))
     
-    context = {
-        'loginStat' : login_stat,
-        'name' : user_fname,
-        'message' : message,
-    }
-    
-    return HttpResponse(template.render(context, request))
+    else:
+        return redirect('index') 
     
 
 ########################################
 #Query for Ingredients
 def ingredient(request):
-    message = "I am empty!!!!!!!!!!!1"
+    message = "There is no available ingredient!!!"
+    allIngredientCategory = IngredientCategory.objects.all()
+    allIngredient = Ingredient.objects.all()
+    
     user_fname = ', Guest'
     login_stat = True
     if request.user.is_authenticated:
         user_fname = ', ' + request.user.get_short_name()
         login_stat = False
+    
+    submittedValue = request.POST
+    
+    if bool(submittedValue):
+        if 'categorySubmit' in submittedValue:
+            category = submittedValue["categorySubmit"]
+            if category == "All":
+                allIngredient = allIngredient.all()
+            else:
+                categoryID = allIngredientCategory.get(ingredientCategoryName = category).ingredientCategoryID
+                allIngredient = allIngredient.filter(ingredientCategory = categoryID)
+        elif 'searchFor' in submittedValue:
+            searchFor = submittedValue['searchFor']
+            allIngredient = allIngredient.filter(ingredientName__contains = searchFor)
+        
     template = loader.get_template('recipeManager/ingredient.html')
     
     context = {
         'loginStat' : login_stat,
         'name' : user_fname,
+        'allIngredientCategory' : allIngredientCategory,
+        'allIngredient' : allIngredient,
         'message' : message,
     }
     
@@ -98,36 +121,38 @@ def newIngredient(request):
         user_fname = ', ' + request.user.get_short_name()
         login_stat = False
     
-    #This is what we get from user    
-    if request.POST:
-        print(request.POST)
-        name = request.POST['ingredientName']
-        baseCal = request.POST['baseCalorie']
-        category = request.POST['ingredientCategory']
-        imageDir = request.POST['ingredientImg']
+        #This is what we get from user    
+        if request.POST:
+            print(request.POST)
+            name = request.POST['ingredientName']
+            baseCal = request.POST['baseCalorie']
+            category = request.POST['ingredientCategory']
+            imageDir = request.POST['ingredientImg']
+            
+            if not isfloat(baseCal):
+                message = "You entered the wrong value for Base Calorie!"
+            else:
+                newItem = Ingredient.objects.create(ingredientName = name,
+                                                        baseCalorie = baseCal,
+                                                        ingredientCategory = IngredientCategory.objects.get(ingredientCategoryName = category),
+                                                        ingredientImg = imageDir)
+                newItem.save()
+                return redirect('ingredient') 
+            
+        template = loader.get_template('recipeManager/newIngredient.html')
         
-        if not isfloat(baseCal):
-            message = "You entered the wrong value for Base Calorie!"
-        else:
-            newItem = Ingredient.objects.create(ingredientName = name,
-                                                      baseCalorie = baseCal,
-                                                      ingredientCategory = IngredientCategory.objects.get(ingredientCategoryName = category),
-                                                      ingredientImg = imageDir)
-            newItem.save()
-            return redirect('ingredient') 
+        context = {
+            'loginStat' : login_stat,
+            'name' : user_fname,
+            'allIngredientCategory' : allIngredientCategory,
+            'message' : message,
+        }
         
-    template = loader.get_template('recipeManager/newIngredient.html')
-    
-    context = {
-        'loginStat' : login_stat,
-        'name' : user_fname,
-        'allIngredientCategory' : allIngredientCategory,
-        'message' : message,
-    }
-    
-    return HttpResponse(template.render(context, request))
+        return HttpResponse(template.render(context, request))
+    else:
+        return redirect('index') 
 
-
+########################################
 #This function is used to show all utensil 
 def utensil(request):
     message = ""

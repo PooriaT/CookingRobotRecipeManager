@@ -23,7 +23,9 @@
         <div class="w3-bar w3-black">
             <div class="w3-panel w3-left">
                 <a href="/" class="w3-bar-item w3-button"><i class="w3-large fa fa-home"></i></a>
-                <a href="newitem/" class="w3-bar-item w3-button">New ingredient</a>
+                {% if not loginStat %}
+                    <a href="newitem/" class="w3-bar-item w3-button">New ingredient</a>
+                {% endif %}
                 <a href="#" class="w3-bar-item w3-button">Lists</a>
                 <a href="/utensil/" class="w3-bar-item w3-button">Utensils</a>
             </div>
@@ -31,44 +33,49 @@
             <div class="w3-container w3-right">
                 <form class="w3-panel" method="post">
                     {% csrf_token %}
-                    {% comment %} <label for="searchItem">Search in:</label> {% endcomment %}
-                    <select class="w3-button w3-red w3-round-xlarge" id="search" name="search">
-                        <option value="recipeName">Recipe Name</option>
-                        <option value="category">Category</option>
-                        <option value="chefName">Representer</option>
-                    </select>
                     <input class="w3-round-xlarge" type="search" id="searchFor" name="searchFor" placeholder="Search Here!">
-                    <input class="w3-round-xlarge w3-button" type="submit" name="searchSubmit" value="Submit">
                 </form>                  
             </div>
         </div> 
 
+        <div class="w3-bar w3-grey w3-padding-16">
+            <form method="post">
+                <input class="w3-bar-item w3-button" type="submit" name="categorySubmit" value="All">
+                {% if allIngredientCategory %}
+                    {% for category in allIngredientCategory %}
+                            {% csrf_token %}
+                            <input class="w3-bar-item w3-button" type="submit" name="categorySubmit" value="{{ category.ingredientCategoryName }}">
+                    {% endfor %}
+                {% endif %}
+            </form> 
+        </div>
         
         <div class="w3-content" style="max-width:1100px">
             
-
-            <!-- Sorting Box -->
-            <div class="w3-container w3-margin-top w3-lime w3-half">
-                <form class="w3-panel w3-row" method="post">
-                    {% csrf_token %}
-                    <label class="w3-large w3-col s2" for="sortItem">Sort By:</label>
-                    <select class="w3-input w3-col s6" id="sort" name="sort">
-                        <option value="default">----</option>
-                        <option value="recipeName">Recipe Name</option>
-                        <option value="category">Category</option>
-                        <option value="duration">Time Duration</option>
-                        <option value="calories">Calories</option>
-                        <option value="servings">Servings</option>
-                        <option value="chefName">Representer</option>
-                    </select>
-                    <input class="w3-btn w3-right w3-black w3-col s3" type="submit" name="sortSubmit" value="Submit">
-                </form>                  
-            </div>
-
-
             <!-- Page content -->
             <div class="w3-container">
-               {{message}}
+                {% if allIngredient %}
+                    {% for item in allIngredient %}
+                        
+                        <div class="w3-mobile w3-mobile w3-quarter w3-card-4 w3-round-xxlarge w3-teal w3-margin w3-padding-16">
+                            <div class="w3-center">
+                                <div class="w3-container">
+                                    <h5>{{ item.ingredientName }}</h5>
+                                    <p>{{ item.baseCalorie }} calorie per 100g</p>
+                                    <p>{{ item.ingredientCategory.ingredientCategoryName }}</p>
+                                    <img width="150px" src="/media/{{ item.ingredientImg }}" alt="{{ item.ingredientName }}">
+                                </div>
+                            </div>
+                        </div> 
+                    {% endfor %}
+                {% else %}
+                    {% if message %}
+                        <div class="w3-panel w3-red">
+                            <h3>Notice!</h3>
+                            <p>{{ message }}</p>
+                        </div>  
+                    {% endif %}
+                {% endif %}
             </div>
         <!-- End page content -->
         </div>

@@ -23,7 +23,9 @@
         <div class="w3-bar w3-black">
             <div class="w3-panel w3-left">
                 <a href="/" class="w3-bar-item w3-button"><i class="w3-large fa fa-home"></i></a>
-                <a href="newRecipe/" class="w3-bar-item w3-button">New Recipe</a>
+                {% if not loginStat %}
+                    <a href="newRecipe/" class="w3-bar-item w3-button">New Recipe</a>
+                {% endif %}
                 <a href="ingredient/" class="w3-bar-item w3-button ">Ingredients</a>
                 <a href="#" class="w3-bar-item w3-button">Lists</a>
                 <a href="utensil/" class="w3-bar-item w3-button">Utensils</a>

@@ -25,8 +25,8 @@
                 <a href="/" class="w3-bar-item w3-button"><i class="w3-large fa fa-home"></i></a>
                 {% if not loginStat %}
                     <a href="newitem/" class="w3-bar-item w3-button">New ingredient</a>
+                    <a href="/list/" class="w3-bar-item w3-button">Lists</a>
                 {% endif %}
-                <a href="#" class="w3-bar-item w3-button">Lists</a>
                 <a href="/utensil/" class="w3-bar-item w3-button">Utensils</a>
             </div>
             <!-- Search Box -->
@@ -57,7 +57,7 @@
                 {% if allIngredient %}
                     {% for item in allIngredient %}
                         
-                        <div class="w3-mobile w3-mobile w3-quarter w3-card-4 w3-round-xxlarge w3-teal w3-margin w3-padding-16">
+                        <div class="w3-mobile w3-quarter w3-card-4 w3-round-xxlarge w3-teal w3-margin w3-padding-16">
                             <div class="w3-center">
                                 <div class="w3-container">
                                     <h5>{{ item.ingredientName }}</h5>

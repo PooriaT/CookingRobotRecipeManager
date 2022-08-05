@@ -16,7 +16,9 @@ from .models import List
 ########################################
 #Homepage 
 def index(request):
-    allObjs = {}#Recipe.objects.all()
+    message = "No Result!"
+    allRecipe = Recipe.objects.all()
+    
     
     user_fname = ', Guest'
     login_stat = True
@@ -25,24 +27,29 @@ def index(request):
         login_stat = False
     
     submittedValue = request.POST
-    
     if bool(submittedValue):
         if 'sortSubmit' in submittedValue:
-            if submittedValue["sort"] != 'default':
-                item = submittedValue["sort"]
-                allObjs = sortByItem(item, allObjs)
-        elif 'searchSubmit' in submittedValue:
+            if submittedValue["sortSubmit"] != 'default':
+                item = submittedValue["sortSubmit"]
+                allRecipe = allRecipe.order_by(item)
+        elif 'search' in submittedValue:
             item = submittedValue['search']
             searchFor = submittedValue['searchFor']
-            allObjs = searchItem(item, searchFor, allObjs)
+            if item == "recipeName":
+                allRecipe = allRecipe.filter(recipeName__contains=searchFor)
+            elif item == "chefName":
+                allRecipe = allRecipe.filter(chefName__contains=searchFor)
+            else:
+                allRecipe = {}
+
         
-    
     template = loader.get_template('recipeManager/index.html')
     
     context = {
         'loginStat' : login_stat,
         'name' : user_fname,
-        'items': allObjs,
+        'allRecipe': allRecipe,
+        'message' : message,
     }
     
     return HttpResponse(template.render(context, request))
@@ -123,7 +130,6 @@ def newIngredient(request):
     
         #This is what we get from user    
         if request.POST:
-            print(request.POST)
             name = request.POST['ingredientName']
             baseCal = request.POST['baseCalorie']
             category = request.POST['ingredientCategory']
@@ -182,26 +188,29 @@ def utensil(request):
     
     return HttpResponse(template.render(context, request))
 
-#################################################
 ########################################
-#This is the sorting function to re order the data illustration
-def sortByItem(item, allItems):
-    allItems = allItems.order_by(item)
-    return allItems
-
-########################################
-#This is the searching function
-def searchItem(item, searchFor, allItems):
-    if item == "recipeName":
-        allItems = allItems.filter(recipeName=searchFor)
-    elif item == "category":
-        allItems = allItems.filter(category=searchFor)
-    elif item == "chefName":
-        allItems = allItems.filter(chefName=searchFor)
-    else:
-        allItems = {}
+#This function is used to show all list
+def userList(request):
+    message = ""
     
-    return allItems
+    user_fname = ', Guest'
+    login_stat = True
+    if request.user.is_authenticated:
+        user_fname = ', ' + request.user.get_short_name()
+        login_stat = False
+        
+    template = loader.get_template('recipeManager/list.html')
+    
+    context = {
+        'loginStat' : login_stat,
+        'name' : user_fname,
+        'message' : message,
+    }
+    
+    return HttpResponse(template.render(context, request))
+
+#################################################
+
 
 
 
@@ -215,7 +224,6 @@ def loginFunc(request):
         username = request.POST['username']
         password = request.POST['password']
         user = authenticate(request, username=username, password=password)
-        print(user)
         if user is not None:
             login(request, user)
             return redirect('index')

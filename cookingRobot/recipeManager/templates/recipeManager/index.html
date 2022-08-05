@@ -11,7 +11,7 @@
 
         <!-- Header -->
         <header class="w3-container w3-bar w3-red">
-            <h1 class="w3-bar-item">&#127858 Welcome to Recipes Manager{{name}}!</h1>
+            <h1 class="w3-bar-item w3-animate-zoom">&#127858 Welcome to Recipes Manager{{name}}!</h1>
             {% if loginStat %}
                 <div >
                     <a href="login/" class="w3-bar-item w3-block w3-mobile w3-padding-32 w3-right">Login/Sign up!</a>
@@ -27,7 +27,9 @@
                     <a href="newRecipe/" class="w3-bar-item w3-button">New Recipe</a>
                 {% endif %}
                 <a href="ingredient/" class="w3-bar-item w3-button ">Ingredients</a>
-                <a href="#" class="w3-bar-item w3-button">Lists</a>
+                {% if not loginStat %}
+                    <a href="list/" class="w3-bar-item w3-button">Lists</a>
+                {% endif %}
                 <a href="utensil/" class="w3-bar-item w3-button">Utensils</a>
             </div>
             <!-- Search Box -->
@@ -37,7 +39,6 @@
                     {% comment %} <label for="searchItem">Search in:</label> {% endcomment %}
                     <select class="w3-button w3-red w3-round-xlarge" id="search" name="search">
                         <option value="recipeName">Recipe Name</option>
-                        <option value="category">Category</option>
                         <option value="chefName">Representer</option>
                     </select>
                     <input class="w3-round-xlarge" type="search" id="searchFor" name="searchFor" placeholder="Search Here!">
@@ -46,53 +47,136 @@
             </div>
         </div> 
 
+        <div class="w3-bar w3-lime  w3-padding-16">
+            <form method="post">
+                {% csrf_token %}
+                <button class="w3-bar-item w3-button" type="submit" name="sortSubmit" value="recipeName">Recipe Name</button>
+                <button class="w3-bar-item w3-button" type="submit" name="sortSubmit" value="duration">Time Duration</button>
+                <button class="w3-bar-item w3-button" type="submit" name="sortSubmit" value="calories">Calories</button>
+                <button class="w3-bar-item w3-button" type="submit" name="sortSubmit" value="servings">Servings</button>
+                <button class="w3-bar-item w3-button" type="submit" name="sortSubmit" value="rating">Rate</button>
+                <button class="w3-bar-item w3-button" type="submit" name="sortSubmit" value="chefName">Representer</button>
+            </form> 
+        </div>
         
         <div class="w3-content" style="max-width:1100px">
-            
-
-            <!-- Sorting Box -->
-            <div class="w3-container w3-margin-top w3-lime w3-half">
-                <form class="w3-panel w3-row" method="post">
-                    {% csrf_token %}
-                    <label class="w3-large w3-col s2" for="sortItem">Sort By:</label>
-                    <select class="w3-input w3-col s6" id="sort" name="sort">
-                        <option value="default">----</option>
-                        <option value="recipeName">Recipe Name</option>
-                        <option value="category">Category</option>
-                        <option value="duration">Time Duration</option>
-                        <option value="calories">Calories</option>
-                        <option value="servings">Servings</option>
-                        <option value="chefName">Representer</option>
-                    </select>
-                    <input class="w3-btn w3-right w3-black w3-col s3" type="submit" name="sortSubmit" value="Submit">
-                </form>                  
-            </div>
-
 
             <!-- Page content -->
             <div class="w3-container">
-                {% if items %}
+                {% if allRecipe %}
                     <ul>
-                        {% for item in items %}
-                            <div class="w3-panel w3-blue w3-card-4">
-                                <p><b>Recipe ID: #</b> {{ item.recipeID }}</p>
-                                <p><b>Food Name:</b> {{ item.recipeName }}</p>
-                                <p><b>Category:</b> {{ item.category }}</p>
-                                <p><b>Ingredients:</b></p>
-                                <p>
-                                    {{item.ingredient|linenumbers|linebreaksbr }}
-                                </p>
-                                <p><b>Time Duration:</b> {{ item.duration }}</p>
-                                <p><b>Steps:</b></p>
-                                <p>{{ item.steps|linebreaksbr }}</p>
-                                <p><b>Calorie:</b> {{ item.calories }} C</p>
-                                <p><b>Servings:</b> {{ item.servings|floatformat:"0" }}</p>
-                                <p><b>Introduced by:</b> {{ item.chefName }}</p>
-                            </div>
-                        {% endfor %}
+                        <div class="w3-row">
+                            {% for item in allRecipe %}
+                                <div class="w3-mobile w3-container w3-col s4 w3-round-xxlarge w3-black w3-padding-16">
+                                    
+                                    <button onclick="document.getElementById('id01').style.display='block'" class="w3-bar">
+                                        <h3>{{ item.recipeName }}</h3>
+                                        <img class="w3-circle" width="150px" src="/media/{{ item.recipeImg }}" alt="{{ item.recipeName }}">
+                                    </button>
+
+                                    <div id="id01" class="w3-modal">
+                                        <div class="w3-modal-content">
+                                            <header class="w3-container w3-teal"> 
+                                                <span onclick="document.getElementById('id01').style.display='none'" 
+                                                class="w3-button w3-display-topright">&times;</span>
+                                                <h3>{{ item.recipeName }}</h3>
+                                            </header>
+                                            <div class="w3-container w3-text-black">
+                                                {% if item.category  %}
+                                                    <p><b>Category:</b></p>
+                                                    <ul >
+                                                        {% for x in item.category.all %}
+                                                            <li>{{ x.categoryName }}</li>
+                                                        {% endfor %}
+                                                    </ul>
+                                                {% endif %}
+                                                
+                                                {% if item.ingredient  %}
+                                                    <p><b>Ingredients:</b></p>
+                                                    <ul>
+                                                        {% for x in item.ingredient.all %}
+                                                            {% for keys, values in item.ingredientAmount.items %}
+                                                                {% if keys == x.ingredientName %}
+                                                                    <li><b>{{ x.ingredientName }}</b> : {{ values }}</li>
+                                                                {% endif %}
+                                                            {% endfor %}
+                                                        {% endfor %}
+                                                    </ul>
+                                                {% endif %}
+
+                                                {% if item.utensil %}
+                                                    <p><b>Utensils:</b></p>
+                                                    <ul>
+                                                        {% for x in item.utensil.all%}
+                                                            <li>{{ x.utensilName }}</li>
+                                                        {% empty %}
+                                                        <li>No available item!</li>
+                                                        {% endfor %}
+                                                    </ul>
+                                                {% endif %}
+                                                <p><b>Time Duration:</b> {{ item.duration }}</p>
+                                                <p><b>Steps:</b></p>
+                                                <p>{{ item.steps|linebreaksbr }}</p>
+                                                <p><b>Calorie:</b> {{ item.calories }} C</p>
+                                                <p><b>Servings:</b> {{ item.servings|floatformat:"0" }}</p>
+                                                <p><b>Rate:</b>
+                                                    {% if item.rating < 1  %}
+                                                        <span class="fa fa-star-o"></span>
+                                                        <span class="fa fa-star-o"></span>
+                                                        <span class="fa fa-star-o"></span>
+                                                        <span class="fa fa-star-o"></span>
+                                                        <span class="fa fa-star-o"></span>
+                                                    {% elif item.rating < 2 %}
+                                                        <span class="fa fa-star"></span>
+                                                        <span class="fa fa-star-o"></span>
+                                                        <span class="fa fa-star-o"></span>
+                                                        <span class="fa fa-star-o"></span>
+                                                        <span class="fa fa-star-o"></span>
+                                                    {% elif item.rating < 3 %}
+                                                        <span class="fa fa-star"></span>
+                                                        <span class="fa fa-star"></span>
+                                                        <span class="fa fa-star-o"></span>
+                                                        <span class="fa fa-star-o"></span>
+                                                        <span class="fa fa-star-o"></span>
+                                                    {% elif item.rating < 4 %}
+                                                        <span class="fa fa-star"></span>
+                                                        <span class="fa fa-star"></span>
+                                                        <span class="fa fa-star"></span>
+                                                        <span class="fa fa-star-o"></span>
+                                                        <span class="fa fa-star-o"></span>
+                                                    {% elif item.rating < 5 %}
+                                                        <span class="fa fa-star"></span>
+                                                        <span class="fa fa-star"></span>
+                                                        <span class="fa fa-star"></span>
+                                                        <span class="fa fa-star"></span>
+                                                        <span class="fa fa-star-o"></span>
+                                                    {% else %}
+                                                        <span class="fa fa-star"></span>
+                                                        <span class="fa fa-star"></span>
+                                                        <span class="fa fa-star"></span>
+                                                        <span class="fa fa-star"></span>
+                                                        <span class="fa fa-star"></span>
+                                                    {% endif %}
+                                                </p>
+                                                <p><b>Number of Rates:</b> {{ item.numRater }}</p>
+                                                <img width="150px" src="/media/{{ item.recipeImg }}" alt="{{ item.recipeName }}">
+                                            </div>
+                                            <footer class="w3-container w3-teal">
+                                                <p><b>Introduced by:</b> {{ item.chefName }}</p>
+                                            </footer>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            {% endfor %}
+                        </div>
                     </ul>
                 {% else %}
-                    <p class="w3-panel w3-red">No Entry!!!!.</p>
+                    {% if message %}
+                        <div class="w3-panel w3-red">
+                            <p><b>{{ message }}</b></p>
+                        </div>  
+                    {% endif %}
                 {% endif %}
             </div>
         <!-- End page content -->

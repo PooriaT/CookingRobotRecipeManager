@@ -1,3 +1,4 @@
+import re
 from django.shortcuts import render, redirect
 from django.template import loader
 
@@ -5,6 +6,10 @@ from django.http import HttpResponse
 
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
+
+import json
+#from django.core import serializers
+from datetime import datetime, timedelta
 
 from .models import IngredientCategory
 from .models import Ingredient
@@ -57,7 +62,15 @@ def index(request):
 ########################################
 #The function related to adding new Ingredient 
 def newRecipe(request):
-    message = "I am an empty new recipe page!!!!!!!!!!!"
+    message = ""
+    
+    allRecipeCategory = RecipeCategory.objects.all()
+    allIngredientCategory = IngredientCategory.objects.all()
+    allIngredient = Ingredient.objects.all()
+    allUtensil = Utensil.objects.all()
+    
+    #allUtensil = serializers.serialize("json", Utensil.objects.all()) # list(allUtensil.values())
+    
     user_fname = ', Guest'
     login_stat = True
     if request.user.is_authenticated:
@@ -65,9 +78,63 @@ def newRecipe(request):
         login_stat = False
         template = loader.get_template('recipeManager/newRecipe.html')
         
+        print(request.POST)
+        if request.POST:
+            name = request.POST['recipeName']
+            category = request.POST.getlist('category')
+            ingredient = request.POST.getlist('ingredient')
+            amount = request.POST.getlist('amount')
+            
+            ingredientAmount = {}
+            for i in range(len(ingredient)):
+                ingredientAmount[ingredient[i].strip()] = amount[i]
+            
+            ingredientAmount = json.dumps(ingredientAmount)
+            utensil = request.POST.get('utensil')
+            duration = request.POST['duration']#str(int(request.POST['duration']) * 3600)
+            steps = request.POST['steps']
+            servings = request.POST['servings']
+            calories = request.POST['calories']
+            
+            
+                
+            chefName = request.user.get_full_name()
+            
+            duration = timedelta(hours= float(duration))
+            print(duration)
+            newItem = Recipe.objects.create(recipeName = name,
+                                            ingredientAmount = ingredientAmount,
+                                            duration = duration,
+                                            steps = steps,
+                                            servings = servings,
+                                            calories = calories,
+                                            chefName = chefName,
+                                            )
+            print(ingredientAmount)
+            if request.POST['ingredientImg']:
+                imgDir = request.POST['ingredientImg']
+                newItem.recipeImg.add(imgDir)
+                
+            if category:
+                for item in category:
+                    newItem.category.add(RecipeCategory.objects.get(categoryName = item))       
+            if ingredient:
+                for item in ingredient:
+                    newItem.ingredient.add(Ingredient.objects.get(ingredientName = item.strip())) 
+            if utensil:    
+                for item in utensil:
+                    newItem.utensil.add(Utensil.objects.get(utensilName = item.strip())) 
+                          
+            # newItem.save()
+            return redirect('index') 
+        
         context = {
             'loginStat' : login_stat,
             'name' : user_fname,
+            'allRecipeCategory' : allRecipeCategory,
+            'allIngredientCategory' : allIngredientCategory,
+            'allIngredient' : allIngredient,
+            'allUtensil' : allUtensil,
             'message' : message,
         }
         
@@ -199,15 +266,17 @@ def userList(request):
         user_fname = ', ' + request.user.get_short_name()
         login_stat = False
         
-    template = loader.get_template('recipeManager/list.html')
-    
-    context = {
-        'loginStat' : login_stat,
-        'name' : user_fname,
-        'message' : message,
-    }
-    
-    return HttpResponse(template.render(context, request))
+        template = loader.get_template('recipeManager/list.html')
+        
+        context = {
+            'loginStat' : login_stat,
+            'name' : user_fname,
+            'message' : message,
+        }
+        
+        return HttpResponse(template.render(context, request))
+    else:
+        return redirect('index') 
 
 #################################################
 
@@ -256,11 +325,11 @@ def register(request):
         username = request.POST['username']
         email = request.POST['email']
         password = request.POST['password']
-        
+                
         if allUser.filter(username = username):
             message = "This username already exists!"
         elif allUser.filter(email = email):
-            message =" This email address already exists!"
+            message ="This email address already exists!"
         else:
             person = User.objects.create_user(username, email, password,
                                           first_name = first_name, last_name = last_name)
@@ -274,6 +343,59 @@ def register(request):
     }
     return HttpResponse(template.render(context, request))
 
+########################################
+#Profile setting page
+def profile(request):
+    message = ""
+    
+    login_stat = True
+    if request.user.is_authenticated:
+        user_fname = ', ' + request.user.get_short_name()
+        login_stat = False
+         
+        user = request.user
+        userInfo = User.objects.filter(username = user)
+        old_id = userInfo[0].id
+        old_username = userInfo[0].username
+        old_password = userInfo[0].password
+        
+        if request.POST:
+            fname = request.POST['firstname']
+            lname = request.POST['lastname']
+            #username = request.POST['username']
+            email = request.POST['email']
+            password = request.POST['password']
+            print(password)
+            
+            if User.objects.filter(email = email) and (User.objects.filter(email = email)[0].id != old_id): 
+                message ="This email address already exists!"
+            else: 
+                if password:
+                    new_info = User(id=old_id, username = old_username, email = email,
+                                    first_name = fname, last_name = lname)
+                    new_info.set_password(password)
+                    
+                else:
+                    new_info = User(id=old_id, username = old_username, email = email, password = old_password,
+                                    first_name = fname, last_name = lname)
+                
+                new_info.save()
+                login(request, new_info)
+                return redirect('index')
+                
+        
+        template = loader.get_template('recipeManager/profile.html')
+        
+        context = {
+            'loginStat' : login_stat,
+            'name' : user_fname,
+            'userInfo' : userInfo[0],
+            'message' : message,
+        }
+        
+        return HttpResponse(template.render(context, request))
+    else:
+        return redirect('index')
 
 
 #############################################

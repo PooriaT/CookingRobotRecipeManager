@@ -374,7 +374,6 @@ def profile(request):
                     new_info = User(id=old_id, username = old_username, email = email,
                                     first_name = fname, last_name = lname)
                     new_info.set_password(password)
-                    
                 else:
                     new_info = User(id=old_id, username = old_username, email = email, password = old_password,
                                     first_name = fname, last_name = lname)

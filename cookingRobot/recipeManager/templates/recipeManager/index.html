@@ -22,7 +22,7 @@
 
         <!-- Header -->
         <header class="w3-container w3-bar w3-cyan">
-            <h1 class="w3-bar-item w3-animate-zoom">&#127858 Welcome to Recipes Manager{{name}}!</h1>
+            <h1 class="w3-bar-item">Welcome to Recipes Manager{{name}}!</h1>
             {% if loginStat %}
                 <div >
                     <a href="login/" class="w3-bar-item w3-block w3-mobile w3-padding-32 w3-right">Login/Sign up!</a>
@@ -33,22 +33,22 @@
         </header>
         <div class="w3-bar w3-black">
             <div class="w3-panel w3-left">
-                <a href="/" class="w3-bar-item w3-button"><i class="w3-large fa fa-home"></i></a>
+                <a href="/" class="w3-bar-item w3-button w3-animate-zoom w3-hover-black"><i class="w3-large fa fa-home"></i></a>
                 {% if not loginStat %}
-                    <a href="newRecipe/" class="w3-bar-item w3-button">New Recipe</a>
+                    <a href="newRecipe/" class="w3-bar-item w3-button w3-animate-zoom w3-hover-black">New Recipe</a>
                 {% endif %}
-                <a href="ingredient/" class="w3-bar-item w3-button ">Ingredients</a>
+                <a href="ingredient/" class="w3-bar-item w3-button w3-animate-zoom w3-hover-black">Ingredients</a>
                 {% if not loginStat %}
-                    <a href="list/" class="w3-bar-item w3-button">Lists</a>
+                    <a href="list/" class="w3-bar-item w3-button w3-animate-zoom w3-hover-black">Lists</a>
                 {% endif %}
-                <a href="utensil/" class="w3-bar-item w3-button">Utensils</a>
+                <a href="utensil/" class="w3-bar-item w3-button w3-animate-zoom w3-hover-black">Utensils</a>
             </div>
             <!-- Search Box -->
             <div class="w3-container w3-right">
                 <form class="w3-panel" method="post">
                     {% csrf_token %}
                     {% comment %} <label for="searchItem">Search in:</label> {% endcomment %}
-                    <select class="w3-button w3-red w3-round-xlarge" id="search" name="search">
+                    <select class="w3-button w3-lime w3-round-xxlarge " id="search" name="search">
                         <option value="recipeName">Recipe Name</option>
                         <option value="chefName">Representer</option>
                     </select>
@@ -82,7 +82,7 @@
                                     
                                     <button onclick="document.getElementById('id01').style.display='block'" class="w3-bar w3-round-xxlarge">
                                         <h3>{{ item.recipeName }}</h3>
-                                        <img class="w3-circle w3-padding-16 w3-border-aqua" width="150px" src="/media/{{ item.recipeImg }}" alt="{{ item.recipeName }}">
+                                        <img class="w3-circle w3-padding-16 " width="150px" src="/media/{{ item.recipeImg }}" alt="{{ item.recipeName }}">
                                     </button>
 
                                     <div id="id01" class="w3-modal">

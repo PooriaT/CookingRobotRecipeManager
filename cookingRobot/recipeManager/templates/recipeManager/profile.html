@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Recipe Cooking Robot Manager</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="/static/recipeManager/css/w3.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    </head>
+    <body>
+
+        <!-- Header -->
+        <header class="w3-container w3-bar w3-red">
+            <h1 class="w3-bar-item">&#127858 Welcome to Recipes Manager!</h1>
+            {% if loginStat %}
+                <div >
+                    <a href="/login/" class="w3-bar-item w3-block w3-mobile w3-padding-32 w3-right">Login/Sign up!</a>
+                </div>
+            {% else %}
+            <a href={% url 'logout' %} class="w3-bar-item w3-block w3-mobile w3-padding-32 w3-right">Logout!</a><a href="/profile/" class="w3-bar-item w3-block w3-mobile w3-padding-32 w3-right">Profile Setting</a>
+            {% endif%}
+        </header>
+        <div class="w3-bar w3-black">
+            <div class="w3-panel w3-left">
+                <a href="/" class="w3-bar-item w3-button"><i class="w3-large fa fa-home"></i></a>
+                <a href="/ingredient/" class="w3-bar-item w3-button ">Ingredients</a>
+                <a href="/list/" class="w3-bar-item w3-button">Lists</a>
+                <a href="/utensil/" class="w3-bar-item w3-button">Utensils</a>
+            </div>
+        </div> 
+
+        
+        <div class="w3-content" style="max-width:1100px">
+            <!-- Page content -->
+            <div class="w3-container w3-margin-top w3-margin-bottom">
+                {% if message %}
+                    <div class="w3-panel w3-red">
+                        <h3>Notice!</h3>
+                        <p>{{ message }}</p>
+                  </div>  
+                {% endif %}
+                <div class="w3-container w3-lime">
+                    <h2>Update User Information</h2>
+                </div>
+                {% if userInfo%}
+                    
+                    <form class="w3-container w3-card-4" method="POST">
+                        {% csrf_token %}
+                        
+                        <p>
+                            <input class="w3-input" type="text" style="width:90%" name="firstname" value="{{ userInfo.first_name }}" required>
+                            <label>First Name</label>
+                        </p>
+                        <p>
+                            <input class="w3-input" type="text" style="width:90%" name="lastname" value="{{ userInfo.last_name }}" required>
+                            <label>Last name</label>
+                        </p>
+                        <p>
+                            <input class="w3-input" type="text" style="width:90%" name="username" value="{{ userInfo.username }}" disabled>
+                            <label>Username</label>
+                        </p>
+                        <p>
+                            <input class="w3-input" type="email" style="width:90%" name="email" value="{{ userInfo.email }}" required>
+                            <label>Email Address</label>
+                        </p>
+                        <p>
+                            <input class="w3-input" type="password" style="width:90%" name="password">
+                            <label>Password</label>
+                        </p>
+                        
+                        <p>
+                            <button type="submit" value="confirm" class="w3-button w3-section w3-teal w3-ripple"> Update </button>
+                        </p>
+                        
+                    </form>
+                    
+                {% endif %}
+            </div>
+        <!-- End page content -->
+        </div>
+
+        <!-- Footer -->
+        <footer class="w3-center w3-light-grey w3-padding-32 w3-margin-top">
+            <p>Powered by CatDog Team</p>
+        </footer>
+
+    </body>
+</html>

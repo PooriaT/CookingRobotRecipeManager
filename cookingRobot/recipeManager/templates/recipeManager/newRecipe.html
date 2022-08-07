@@ -6,6 +6,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="stylesheet" href="/static/recipeManager/css/w3.css">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
         <link href='https://fonts.googleapis.com/css?family=Poppins' rel='stylesheet'>
 
         <style>
@@ -18,6 +19,9 @@
             }
             </style>
 
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
     </head>
     <body>
 
@@ -29,7 +33,7 @@
                     <a href="/login/" class="w3-bar-item w3-block w3-mobile w3-padding-32 w3-right">Login/Sign up!</a>
                 </div>
             {% else %}
-                <a href={% url 'logout' %} class="w3-bar-item w3-block w3-mobile w3-padding-32 w3-right">Logout!</a>
+            <a href={% url 'logout' %} class="w3-bar-item w3-block w3-mobile w3-padding-32 w3-right">Logout!</a><a href="/profile/" class="w3-bar-item w3-block w3-mobile w3-padding-32 w3-right">Profile Setting</a>
             {% endif%}
         </header>
         <div class="w3-bar w3-black">
@@ -52,33 +56,72 @@
                   </div>  
                 {% endif %}
                 <div class="w3-container w3-lime">
-                    <h2>Adding new ingredient details</h2>
+                    <h2>Adding new Recipe</h2>
                 </div>
-                <form class="w3-container w3-card-4" method="post">
+                <form class="w3-container w3-card-4" method="POST">
                     {% csrf_token %}
                     <p>
-                        <input class="w3-input" type="text" style="width:90%" name="ingredientName" required>
-                        <label>Ingredient Name</label>
+                        <input class="w3-input w3-hover-grey" type="text" style="width:90%" name="recipeName" required>
+                        <label>Recipe Name</label>
+                    </p>
+                    <p> 
+                        <div class="w3-row">
+                        {% comment %} <select class="w3-input w3-button w3-round-xlarge w3-grey" style="width:20%" id="category" name="category" required> {% endcomment %}
+                            {% if allRecipeCategory %}
+                                {% for item in allRecipeCategory %}
+                                    <div class="w3-third">
+                                        <input type="checkbox" class="w3-check" name="category" value="{{ item.categoryName }}">
+                                        <label  for="{{ item.categoryName }}">{{ item.categoryName }}</label><br>
+                                    {% comment %} <option value="{{ item.categoryName }}"> {{ item.categoryName }} </option> {% endcomment %}
+                                    </div>
+                                {% endfor%}
+                            {% endif %}
+                        </div><br>    
+                        {% comment %} </select> {% endcomment %}
+                        <div class="w3-border-bottom" style="width:90%"></div>
+                        <label> Category</label> 
+                    </p>
+
+                    <p>
+                        <div class="ingredientItem">                        
+                            <button class="add_form_field_ingredient w3-button w3-button w3-round-xxlarge w3-green">ADD &nbsp; 
+                            <span style="font-size:16px; font-weight:bold;">+</span>
+                            </button><br><br>
+                        </div>
+                        <div class="w3-border-bottom" style="width:90%"></div>
+                        <label>Ingredient</label> 
+                    </p>
+
+                    <p>
+                        <div class="utensilItem">                        
+                            <button class="add_form_field_utensil w3-button w3-button w3-round-xxlarge w3-green">ADD &nbsp; 
+                            <span style="font-size:16px; font-weight:bold;">+</span>
+                            </button><br><br>
+                        </div>
+                        <div class="w3-border-bottom" style="width:90%"></div>
+                        <label>Utensil</label> 
+                    </p>
+
+                    <p>
+                        <input class="w3-input w3-hover-grey" type="number" step="0.01" style="width:90%" name="duration" required>
+                        <label>Time Duration (in hours)</label>
                     </p>
                     <p>
-                        <input class="w3-input" type="text" style="width:90%" name="baseCalorie" required>
-                        <label>Base Calorie (per 100g)</label>
+                        <textarea class="w3-input w3-hover-grey" type="text" style="width:90%" name="steps" cols="40" rows="5" required></textarea>
+                        <label>Steps</label>
+                    </p>
+                    <p>
+                        <input class="w3-input w3-hover-grey" type="number" step="0.01" style="width:90%" name="servings" required>
+                        <label># of Servings</label>
+                    </p>
+                    <p>
+                        <input class="w3-input w3-hover-grey" type="number" step="0.01" style="width:90%" name="calories" required>
+                        <label>Calorie per serving</label>
                     </p>
                     <p>
                         <input class="w3-input" type="file" id="myfile" style="width:90%" name="ingredientImg">
-                        <label for="image">Ingredient Image (optional)</label>
+                        <label for="image">Recipe Image (optional)</label>
                     </p>
-                    <p>
-                        <select class="w3-input w3-button w3-grey" style="width:20%" id="ingredientCategory" name="ingredientCategory" required>
-                            {% if allIngredientCategory %}
-                                {% for item in allIngredientCategory %}
-                                    <option value="{{ item.ingredientCategoryName }}"> {{ item.ingredientCategoryName }} </option>
-                                {% endfor%}
-                            {% endif %}
-                        </select>
-                        <label>Ingredient Category</label> 
-                    </p>
-                    
                     <p>
                         <button type="submit" value="submit" class="w3-button w3-section w3-teal w3-ripple"> Submit</button>
                     </p>
@@ -87,11 +130,88 @@
             </div>
         <!-- End page content -->
         </div>
-
         <!-- Footer -->
-        <footer class="w3-center w3-light-grey w3-padding-32">
+        <footer class="w3-center w3-light-grey w3-padding-32 w3-margin-top">
             <p>Powered by CatDog Team</p>
         </footer>
+
+
+        <!-- Adding the required sscript -->
+        <!-- This is for Ingredient-->
+        <script type="text/javascript">
+            $(document).ready(function() {
+                var max_fields = 15;
+                var wrapper = $(".ingredientItem");
+                var add_button = $(".add_form_field_ingredient");
+                var items = [
+                {% for item in allIngredient %}
+                 " {{ item.ingredientName }}",
+                {% endfor %}
+              ];
+                var outString = "";
+                for (let i = 0; i < items.length; i++){
+                    outString += '<option value="' + items[i] + '">' + items[i] + '</option>'; //'<div value="' + item + '" name="' + item + x.toString() + '"></div>';
+                }
+                outString = '<div><div class="w3-cell-row"><select class="w3-cell w3-input w3-button w3-round-xlarge w3-grey" style="width:20%" name="ingredient">' + 
+                    outString + '</select> \
+                        &nbsp&nbsp&nbsp <input class="w3-cell w3-input w3-hover-grey" type="text" style="width:20%" name="amount" required></div> \
+                        <a href="#" class="delete">Delete</a><br></div>';
+                
+                var x = 0;
+                $(add_button).click(function(e) {
+                    e.preventDefault();
+                    if (x < max_fields) {
+                        x++;
+                        $(wrapper).append(outString);
+                    } else {
+                        alert('You Reached the limits')
+                    }
+                });
+            
+                $(wrapper).on("click", ".delete", function(e) {
+                    e.preventDefault();
+                    $(this).parent('div').remove();
+                    x--;
+                })
+            });
+        </script>
+        <!-- This is for utensil-->
+        <script type="text/javascript">
+            $(document).ready(function() {
+                var max_fields = 15;
+                var wrapper = $(".utensilItem");
+                var add_button = $(".add_form_field_utensil");
+                var items = [
+                {% for item in allUtensil %}
+                 " {{ item.utensilName }}",
+                {% endfor %}
+              ];//"{{allUtensil}}";
+                //var items =  JSON.parse('{{ allUtensil | safe }}')
+                var outString = "";
+                for (let i = 0; i < items.length; i++){
+                    outString += '<option value="' + items[i] + '">' + items[i] + '</option>'; //'<div value="' + item + '" name="' + item + x.toString() + '"></div>';
+                }
+                outString = '<div><select class="w3-input w3-button w3-round-xlarge w3-grey" style="width:20%" name="utensil">' + 
+                    outString + '</select><a href="#" class="delete">Delete</a><br></div>';
+                
+                var x = 0;
+                $(add_button).click(function(e) {
+                    e.preventDefault();
+                    if (x < max_fields) {
+                        x++;
+                        $(wrapper).append(outString);
+                    } else {
+                        alert('You Reached the limits')
+                    }
+                });
+            
+                $(wrapper).on("click", ".delete", function(e) {
+                    e.preventDefault();
+                    $(this).parent('div').remove();
+                    x--;
+                })
+            });
+        </script>
 
     </body>
 </html>

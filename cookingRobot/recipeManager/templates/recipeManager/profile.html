@@ -40,38 +40,41 @@
                   </div>  
                 {% endif %}
                 <div class="w3-container w3-lime">
-                    <h2>Adding new ingredient details</h2>
+                    <h2>Update User Information</h2>
                 </div>
-                <form class="w3-container w3-card-4" method="post">
-                    {% csrf_token %}
-                    <p>
-                        <input class="w3-input" type="text" style="width:90%" name="ingredientName" required>
-                        <label>Ingredient Name</label>
-                    </p>
-                    <p>
-                        <input class="w3-input" type="text" style="width:90%" name="baseCalorie" required>
-                        <label>Base Calorie (per 100g)</label>
-                    </p>
-                    <p>
-                        <input class="w3-input" type="file" id="myfile" style="width:90%" name="ingredientImg">
-                        <label for="image">Ingredient Image (optional)</label>
-                    </p>
-                    <p>
-                        <select class="w3-input w3-button w3-round-xlarge w3-grey" style="width:20%" id="ingredientCategory" name="ingredientCategory" required>
-                            {% if allIngredientCategory %}
-                                {% for item in allIngredientCategory %}
-                                    <option value="{{ item.ingredientCategoryName }}"> {{ item.ingredientCategoryName }} </option>
-                                {% endfor%}
-                            {% endif %}
-                        </select>
-                        <label>Ingredient Category</label> 
-                    </p>
+                {% if userInfo%}
                     
-                    <p>
-                        <button type="submit" value="submit" class="w3-button w3-section w3-teal w3-ripple"> Submit</button>
-                    </p>
+                    <form class="w3-container w3-card-4" method="POST">
+                        {% csrf_token %}
+                        
+                        <p>
+                            <input class="w3-input" type="text" style="width:90%" name="firstname" value="{{ userInfo.first_name }}" required>
+                            <label>First Name</label>
+                        </p>
+                        <p>
+                            <input class="w3-input" type="text" style="width:90%" name="lastname" value="{{ userInfo.last_name }}" required>
+                            <label>Last name</label>
+                        </p>
+                        <p>
+                            <input class="w3-input" type="text" style="width:90%" name="username" value="{{ userInfo.username }}" disabled>
+                            <label>Username</label>
+                        </p>
+                        <p>
+                            <input class="w3-input" type="email" style="width:90%" name="email" value="{{ userInfo.email }}" required>
+                            <label>Email Address</label>
+                        </p>
+                        <p>
+                            <input class="w3-input" type="password" style="width:90%" name="password">
+                            <label>Password</label>
+                        </p>
+                        
+                        <p>
+                            <button type="submit" value="confirm" class="w3-button w3-section w3-teal w3-ripple"> Update </button>
+                        </p>
+                        
+                    </form>
                     
-                </form>
+                {% endif %}
             </div>
         <!-- End page content -->
         </div>

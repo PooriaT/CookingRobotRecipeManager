@@ -47,7 +47,7 @@ class Recipe(models.Model):
     calories = models.FloatField()
     rating = models.FloatField(default=0)
     numRater = models.IntegerField(default=0)
-    recipeImg = models.ImageField(upload_to ='recipe/', blank=True, null=True, default='default/noImage.jpeg')
+    recipeImg = models.ImageField(upload_to ='recipe', blank=True, null=True, default='default/noImage.jpeg')
     chefName = models.CharField(max_length=50, default='admin')
     
     

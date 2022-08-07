@@ -6,12 +6,23 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="stylesheet" href="/static/recipeManager/css/w3.css">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+        <link href='https://fonts.googleapis.com/css?family=Poppins' rel='stylesheet'>
+        <style>
+        body {
+            font-family: 'Poppins';font-size: 18px;
+        }
+        h1 {
+
+            font-family: 'Poppins';font-size: 44px;font-weight: bold; color:#fff
+        }
+        </style>
     </head>
+
     <body>
 
         <!-- Header -->
         <header class="w3-container w3-bar w3-red">
-            <h1 class="w3-bar-item w3-animate-zoom">&#127858 Welcome to Recipes Manager{{name}}!</h1>
+            <h1 class="w3-bar-item">&#127858 Welcome to Recipes Manager{{name}}!</h1>
             {% if loginStat %}
                 <div >
                     <a href="login/" class="w3-bar-item w3-block w3-mobile w3-padding-32 w3-right">Login/Sign up!</a>
@@ -22,33 +33,37 @@
         </header>
         <div class="w3-bar w3-black">
             <div class="w3-panel w3-left">
-                <a href="/" class="w3-bar-item w3-button"><i class="w3-large fa fa-home"></i></a>
+                <a href="/" class="w3-bar-item w3-button w3-animate-zoom w3-hover-black-three"><i class="w3-large fa fa-home"></i></a>
                 {% if not loginStat %}
-                    <a href="newRecipe/" class="w3-bar-item w3-button">New Recipe</a>
+                    <a href="newRecipe/" class="w3-bar-item w3-button w3-animate-zoom w3-hover-black-two">New Recipe</a>
                 {% endif %}
-                <a href="ingredient/" class="w3-bar-item w3-button ">Ingredients</a>
+                <a href="ingredient/" class="w3-bar-item w3-button w3-animate-zoom w3-hover-black-two">Ingredients</a>
                 {% if not loginStat %}
-                    <a href="list/" class="w3-bar-item w3-button">Lists</a>
+                    <a href="list/" class="w3-bar-item w3-button w3-animate-zoom w3-hover-black-two">Lists</a>
                 {% endif %}
-                <a href="utensil/" class="w3-bar-item w3-button">Utensils</a>
+                <a href="utensil/" class="w3-bar-item w3-button w3-animate-zoom w3-hover-black-two">Utensils</a>
             </div>
             <!-- Search Box -->
             <div class="w3-container w3-right">
                 <form class="w3-panel" method="post">
                     {% csrf_token %}
                     {% comment %} <label for="searchItem">Search in:</label> {% endcomment %}
-                    <select class="w3-button w3-red w3-round-xlarge" id="search" name="search">
+                    <select class="w3-button w3-lime w3-round-xxlarge w3-hover-lime" id="search" name="search">
                         <option value="recipeName">Recipe Name</option>
                         <option value="chefName">Representer</option>
                     </select>
-                    <input class="w3-round-xlarge" type="search" id="searchFor" name="searchFor" placeholder=" Search Here!">
+
+                    <input class="w3-round-xlarge" type="search" id="searchFor" name="searchFor" placeholder="  Search Here!">
                     {% comment %} <input class="w3-round-xlarge w3-button" type="submit" name="searchSubmit" value="Submit"> {% endcomment %}
                 </form>                  
             </div>
         </div> 
 
+
+
         <!-- Sorting -->
-        <div class="w3-bar w3-lime w3-margin-bottom w3-padding-16">
+        <div class="w3-bar w3-lime  w3-padding-16 w3-margin-bottom">
+
             <form method="post">
                 {% csrf_token %}
                 <button class="w3-bar-item w3-button" type="submit" name="sortSubmit" value="recipeName">Recipe Name</button>
@@ -68,11 +83,12 @@
                     <ul>
                         <div class="w3-row">
                             {% for item in allRecipe %}
-                                <div class="w3-mobile w3-container w3-col s4 w3-round-xxlarge w3-light-grey w3-padding-16 w3-margin">
+
+                                <div class="w3-mobile w3-container w3-col s4 w3-round-xxlarge w3-light-grey w3-padding-16 w3-margin w3-hover-shadow">
                                     
                                     <button onclick="document.getElementById('{{ item.recipeID }}').style.display='block'" class="w3-bar w3-round-xxlarge w3-padding-16">
                                         <h3>{{ item.recipeName }}</h3>
-                                        <img class="w3-circle w3-padding-16 w3-border-aqua" width="150px" src="/media/{{ item.recipeImg }}" alt="{{ item.recipeName }}">
+                                        <img class="w3-circle w3-padding-16" width="150px" src="/media/{{ item.recipeImg }}" alt="{{ item.recipeName }}">
                                     </button>
                                     
 

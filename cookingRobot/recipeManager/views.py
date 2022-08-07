@@ -397,6 +397,35 @@ def profile(request):
         return redirect('index')
 
 
+
+
+########################################
+#Forget Password page
+def forgetPassword(request):
+    message = "This Page is under construction"
+        
+    template = loader.get_template('recipeManager/forgetPassword.html')
+    
+    context = {
+        'message' : message,
+    }
+    
+    return HttpResponse(template.render(context, request))
+
+
+########################################
+#REset Password page
+def resetPassword(request):
+    message = "This Page is under construction"
+        
+    template = loader.get_template('recipeManager/resetPassword.html')
+    
+    context = {
+        'message' : message,
+    }
+    
+    return HttpResponse(template.render(context, request))
+
 #############################################
 #############################################
 #Additional Functions

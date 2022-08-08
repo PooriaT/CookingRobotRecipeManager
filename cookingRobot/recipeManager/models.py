@@ -20,7 +20,7 @@ class Ingredient(models.Model):
     ingredientName = models.CharField(max_length=50, unique=True)
     baseCalorie = models.FloatField()
     ingredientCategory = models.ForeignKey('IngredientCategory', on_delete=models.CASCADE)
-    ingredientImg = models.ImageField(upload_to ='ingredient/', blank=True, null=True, default='default/noImage.jpeg')
+    ingredientImg = models.ImageField(upload_to ='ingredient', blank=True, null=True, default='default/noImage.jpeg')
 
 #Utensils Class
 class Utensil(models.Model):

@@ -110,9 +110,9 @@ def newRecipe(request):
                                             calories = calories,
                                             chefName = chefName,
                                             )
-            print(ingredientAmount)
-            if request.POST['ingredientImg']:
-                imgDir = request.POST['ingredientImg']
+            
+            if request.POST['recipeImg']:
+                imgDir = request.POST['recipeImg']
                 newItem.recipeImg.add(imgDir)
                 
             if category:
@@ -200,15 +200,19 @@ def newIngredient(request):
             name = request.POST['ingredientName']
             baseCal = request.POST['baseCalorie']
             category = request.POST['ingredientCategory']
-            imageDir = request.POST['ingredientImg']
+            #imageDir = request.POST['ingredientImg']
             
             if not isfloat(baseCal):
                 message = "You entered the wrong value for Base Calorie!"
             else:
                 newItem = Ingredient.objects.create(ingredientName = name,
                                                         baseCalorie = baseCal,
-                                                        ingredientCategory = IngredientCategory.objects.get(ingredientCategoryName = category),
-                                                        ingredientImg = imageDir)
+                                                        ingredientCategory = IngredientCategory.objects.get(ingredientCategoryName = category))
+                
+                if request.POST['ingredientImg']:
+                    imgDir = request.POST['ingredientImg']
+                    newItem.ingredientImg.add(imgDir)
+                    
                 newItem.save()
                 return redirect('ingredient') 
             

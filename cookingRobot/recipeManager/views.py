@@ -46,6 +46,7 @@ def index(request):
                 allRecipe = allRecipe.filter(chefName__contains=searchFor)
             else:
                 allRecipe = {}
+        
 
         
     template = loader.get_template('recipeManager/index.html')

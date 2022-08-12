@@ -1,3 +1,4 @@
+from platform import java_ver
 import re
 from django.shortcuts import render, redirect
 from django.template import loader
@@ -8,6 +9,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 
 import json
+import ast
 #from django.core import serializers
 from datetime import datetime, timedelta
 
@@ -46,7 +48,6 @@ def index(request):
                 allRecipe = allRecipe.filter(chefName__contains=searchFor)
             else:
                 allRecipe = {}
-
         
     template = loader.get_template('recipeManager/index.html')
     
@@ -78,7 +79,6 @@ def newRecipe(request):
         login_stat = False
         template = loader.get_template('recipeManager/newRecipe.html')
         
-        print(request.POST)
         if request.POST:
             name = request.POST['recipeName']
             category = request.POST.getlist('category')
@@ -86,35 +86,35 @@ def newRecipe(request):
             amount = request.POST.getlist('amount')
             
             ingredientAmount = {}
+            
             for i in range(len(ingredient)):
                 ingredientAmount[ingredient[i].strip()] = amount[i]
             
-            ingredientAmount = json.dumps(ingredientAmount)
             utensil = request.POST.get('utensil')
             duration = request.POST['duration']#str(int(request.POST['duration']) * 3600)
             steps = request.POST['steps']
             servings = request.POST['servings']
             calories = request.POST['calories']
-            
-            
-                
+            chefID = User.objects.get(id=request.user.id)
             chefName = request.user.get_full_name()
             
             duration = timedelta(hours= float(duration))
-            print(duration)
+            ast.literal_eval(str(ingredientAmount))
+            
             newItem = Recipe.objects.create(recipeName = name,
                                             ingredientAmount = ingredientAmount,
                                             duration = duration,
                                             steps = steps,
                                             servings = servings,
                                             calories = calories,
+                                            chefID = chefID,
                                             chefName = chefName,
                                             )
             
             if request.POST['recipeImg']:
                 imgDir = request.POST['recipeImg']
                 newItem.recipeImg.add(imgDir)
-                
+
             if category:
                 for item in category:
                     newItem.category.add(RecipeCategory.objects.get(categoryName = item))       
@@ -424,7 +424,7 @@ def profile(request):
             #username = request.POST['username']
             email = request.POST['email']
             password = request.POST['password']
-            print(password)
+            
             
             if User.objects.filter(email = email) and (User.objects.filter(email = email)[0].id != old_id): 
                 message ="This email address already exists!"

@@ -64,6 +64,8 @@ class Recipe(models.Model):
     chefID = models.OneToOneField(User, on_delete=models.CASCADE, blank=True, null=True)
     chefName = models.CharField(max_length=50, default='admin')
     
+    def __str__(self):
+        return self.recipeName
     
 
 #List Class -> Referring to list information

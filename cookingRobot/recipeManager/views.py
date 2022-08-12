@@ -60,7 +60,7 @@ def index(request):
     return HttpResponse(template.render(context, request))
 
 ########################################
-#The function related to adding new Ingredient 
+#The function related to adding new Recipe 
 def newRecipe(request):
     message = ""
     
@@ -135,6 +135,34 @@ def newRecipe(request):
             'allIngredientCategory' : allIngredientCategory,
             'allIngredient' : allIngredient,
             'allUtensil' : allUtensil,
+            'message' : message,
+        }
+        
+        return HttpResponse(template.render(context, request))
+    
+    else:
+        return redirect('index') 
+    
+
+
+########################################
+#The function related to editing new Recipe 
+def editRecipe(request):
+    message = "Editing Recipe"
+    
+
+    
+    user_fname = ', Guest'
+    login_stat = True
+    if request.user.is_authenticated:
+        user_fname = ', ' + request.user.get_short_name()
+        login_stat = False
+        template = loader.get_template('recipeManager/editRecipe.html')
+        
+        
+        context = {
+            'loginStat' : login_stat,
+            'name' : user_fname,
             'message' : message,
         }
         
@@ -228,6 +256,33 @@ def newIngredient(request):
         return HttpResponse(template.render(context, request))
     else:
         return redirect('index') 
+    
+
+########################################
+#The function related to editing new Ingredient 
+def editIngredient(request):
+    message = "Editing Ingredient"
+
+    user_fname = ', Guest'
+    login_stat = True
+    if request.user.is_authenticated:
+        user_fname = ', ' + request.user.get_short_name()
+        login_stat = False
+    
+        
+            
+        template = loader.get_template('recipeManager/editIngredient.html')
+        
+        context = {
+            'loginStat' : login_stat,
+            'name' : user_fname,
+            'message' : message,
+        }
+        
+        return HttpResponse(template.render(context, request))
+    else:
+        return redirect('index') 
+
 
 ########################################
 #This function is used to show all utensil 

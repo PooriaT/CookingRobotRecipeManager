@@ -88,7 +88,7 @@
                                     
                                     <button onclick="document.getElementById('{{ item.recipeID }}').style.display='block'" class="w3-bar w3-round-xxlarge w3-padding-16">
                                         <h3>{{ item.recipeName }}</h3>
-                                        <img class="w3-circle w3-padding-16 w3-border-aqua" width="150px" src="/media/{{ item.recipeImg }}" alt="{{ item.recipeName }}">
+                                        <img class="w3-circle w3-padding-16 w3-border-aqua" width="150px" height="150px" src="/media/{{ item.recipeImg }}" alt="{{ item.recipeName }}">
                                     </button>
                                     
 
@@ -152,10 +152,19 @@
                                                                 <span class="fa fa-star"></span>
                                                             {% endif %}
                                                         </p>
+                                                        <p>
+                                                            {% if not loginStat %}
+                                                                <form method="post" class = "w3-row ">
+                                                                    {% csrf_token %}
+                                                                    <input class="w3-input w3-hover-grey w3-half w3-margin-right" type="number" step="0.1" style="width:20%" name="rating" min="0" max="5">
+                                                                    <button class="w3-bar-item w3-button w3-half w3-black" type="submit" style="width:20%" name="RateSubmit" value="rating">Rate</button>
+                                                                </form> 
+                                                            {% endif %}
+                                                        </p>
                                                         <p><b>Number of Rates:</b> {{ item.numRater }}</p>
                                                     </div>
                                                     <div class="w3-half">
-                                                        <img class="w3-image w3-round-xlarge w3-margin " width="400px" src="/media/{{ item.recipeImg }}" alt="{{ item.recipeName }}">
+                                                        <img class="w3-round-xlarge w3-margin " width="400px" height="400px" src="/media/{{ item.recipeImg }}" alt="{{ item.recipeName }}">
                                                     </div>
                                                 </div>
                                                 {% if item.ingredient  %}

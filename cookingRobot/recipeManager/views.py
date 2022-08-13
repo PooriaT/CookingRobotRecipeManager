@@ -72,6 +72,10 @@ def index(request):
                 itemObj.raters[userID] = str(userRate)
                 itemObj.raters = ast.literal_eval(str(itemObj.raters))
                 itemObj.save()
+        elif 'editSubmit' in submittedValue:
+            pass
+        elif 'shareSubmit' in submittedValue:
+            pass
         
         
     template = loader.get_template('recipeManager/index.html')
@@ -80,6 +84,7 @@ def index(request):
         'loginStat' : login_stat,
         'name' : user_fname,
         'user_ID' : user_ID,
+        'user' : request.user,
         'allRecipe': allRecipe,
         'message' : message,
     }
@@ -174,9 +179,7 @@ def newRecipe(request):
 ########################################
 #The function related to editing new Recipe 
 def editRecipe(request):
-    message = "Editing Recipe"
-    
-
+    message = "Editing Recipe /// Under Construction!!!"
     
     user_fname = ', Guest'
     login_stat = True
@@ -287,7 +290,7 @@ def newIngredient(request):
 ########################################
 #The function related to editing new Ingredient 
 def editIngredient(request):
-    message = "Editing Ingredient"
+    message = "Editing Ingredient /// Under Construction!!!"
 
     user_fname = ', Guest'
     login_stat = True

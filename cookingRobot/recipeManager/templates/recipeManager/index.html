@@ -57,7 +57,7 @@
                         <option value="recipeName">Recipe Name</option>
                         <option value="chefName">Representer</option>
                     </select>
-                    <input class="w3-round-xlarge" type="search" id="searchFor" name="searchFor" placeholder=" Search Here!">
+                    <input class="w3-round-xlarge" type="search" id="searchFor" name="searchFor" placeholder=" &#128269 Search Here!">
                     {% comment %} <input class="w3-round-xlarge w3-button" type="submit" name="searchSubmit" value="Submit"> {% endcomment %}
                 </form>                  
             </div>
@@ -88,7 +88,7 @@
                                     
                                     <button onclick="document.getElementById('{{ item.recipeID }}').style.display='block'" class="w3-bar w3-round-xxlarge w3-padding-16">
                                         <h3>{{ item.recipeName }}</h3>
-                                        <img class="w3-circle w3-padding-16 w3-border-aqua" width="150px" height="150px" src="/media/{{ item.recipeImg }}" alt="{{ item.recipeName }}">
+                                        <img class="w3-circle w3-padding-16 w3-border-aqua" width="200px" height="200px" src="/media/{{ item.recipeImg }}" alt="{{ item.recipeName }}">
                                     </button>
                                     
 
@@ -173,7 +173,13 @@
                                                         <p><b>Number of Rates:</b> {{ item.numRater }}</p>
                                                     </div>
                                                     <div class="w3-half">
-                                                        <img class="w3-round-xlarge w3-margin " width="400px" height="400px" src="/media/{{ item.recipeImg }}" alt="{{ item.recipeName }}">
+                                                        <div>
+                                                            <img class="w3-round-xlarge w3-margin " width="400px" height="400px" src="/media/{{ item.recipeImg }}" alt="{{ item.recipeName }}">
+                                                        </div>
+                                                        <div class="w3-row w3-padding">
+                                                            <input class="w3-input w3-hover-grey w3-twothird w3-margin-right" type="email" style="width:60%" name="sharing" placeholder="Email Address">
+                                                            <button class="w3-bar-item w3-button w3-third w3-black" type="submit" style="width:20%" name="shareSubmit"><i class="fa fa-arrow-right"></i></button>
+                                                        </div>
                                                     </div>
                                                 </div>
                                                 {% if item.ingredient  %}
@@ -202,6 +208,10 @@
                                                 
                                                 <p><b>Steps:</b></p>
                                                 <p>{{ item.steps|linebreaksbr }}</p>
+                                                
+                                                {% if user.id == item.chefID.id %} 
+                                                    <button class="w3-bar-item w3-button w3-third w3-black" type="submit" style="width:20%" name="editSubmit">Edit</button>
+                                                {% endif %}
                                                 
                                             </div>
                                             <footer class="w3-container w3-teal">

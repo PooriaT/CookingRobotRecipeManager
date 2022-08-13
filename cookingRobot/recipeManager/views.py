@@ -1,3 +1,4 @@
+from platform import java_ver
 import re
 from django.shortcuts import render, redirect
 from django.template import loader
@@ -8,6 +9,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 
 import json
+import ast
 #from django.core import serializers
 from datetime import datetime, timedelta
 
@@ -23,13 +25,14 @@ from .models import List
 def index(request):
     message = "No Result!"
     allRecipe = Recipe.objects.all()
-    
+    user_ID = ''
     
     user_fname = ', Guest'
     login_stat = True
     if request.user.is_authenticated:
         user_fname = ', ' + request.user.get_short_name()
         login_stat = False
+        user_ID = str(request.user.id)
     
     submittedValue = request.POST
     if bool(submittedValue):
@@ -46,13 +49,38 @@ def index(request):
                 allRecipe = allRecipe.filter(chefName__contains=searchFor)
             else:
                 allRecipe = {}
+        elif 'rateSubmit' in submittedValue:
+            userID = str(request.user.id)
+            recipeID = submittedValue['rateSubmit']
+            userRate = submittedValue['rating']
+            
+            itemObj = Recipe.objects.get(recipeID = recipeID)
 
+            if userID in itemObj.raters.keys():
+                if len(itemObj.raters.keys()) == 1:
+                    itemObj.rating = (itemObj.rating - float(itemObj.raters[userID]) + float(userRate))
+                else:
+                    itemObj.rating = ((itemObj.rating)*2 - float(itemObj.raters[userID]) + float(userRate))/2
+                itemObj.raters[userID] = userRate
+                itemObj.save()
+            else:
+                if itemObj.raters.keys():
+                    itemObj.rating  = (itemObj.rating + float(userRate))/2
+                else:
+                    itemObj.rating  = (itemObj.rating + float(userRate))
+                itemObj.numRater += 1
+                itemObj.raters[userID] = str(userRate)
+                itemObj.raters = ast.literal_eval(str(itemObj.raters))
+                itemObj.save()
+        
+        print(itemObj)
         
     template = loader.get_template('recipeManager/index.html')
     
     context = {
         'loginStat' : login_stat,
         'name' : user_fname,
+        'user_ID' : user_ID,
         'allRecipe': allRecipe,
         'message' : message,
     }
@@ -60,7 +88,7 @@ def index(request):
     return HttpResponse(template.render(context, request))
 
 ########################################
-#The function related to adding new Ingredient 
+#The function related to adding new Recipe 
 def newRecipe(request):
     message = ""
     
@@ -78,7 +106,6 @@ def newRecipe(request):
         login_stat = False
         template = loader.get_template('recipeManager/newRecipe.html')
         
-        print(request.POST)
         if request.POST:
             name = request.POST['recipeName']
             category = request.POST.getlist('category')
@@ -86,35 +113,35 @@ def newRecipe(request):
             amount = request.POST.getlist('amount')
             
             ingredientAmount = {}
+            
             for i in range(len(ingredient)):
                 ingredientAmount[ingredient[i].strip()] = amount[i]
             
-            ingredientAmount = json.dumps(ingredientAmount)
             utensil = request.POST.get('utensil')
             duration = request.POST['duration']#str(int(request.POST['duration']) * 3600)
             steps = request.POST['steps']
             servings = request.POST['servings']
             calories = request.POST['calories']
-            
-            
-                
+            chefID = User.objects.get(id=request.user.id)
             chefName = request.user.get_full_name()
             
             duration = timedelta(hours= float(duration))
-            print(duration)
+            ast.literal_eval(str(ingredientAmount))
+            
             newItem = Recipe.objects.create(recipeName = name,
                                             ingredientAmount = ingredientAmount,
                                             duration = duration,
                                             steps = steps,
                                             servings = servings,
                                             calories = calories,
+                                            chefID = chefID,
                                             chefName = chefName,
                                             )
             
             if request.POST['recipeImg']:
                 imgDir = request.POST['recipeImg']
                 newItem.recipeImg.add(imgDir)
-                
+
             if category:
                 for item in category:
                     newItem.category.add(RecipeCategory.objects.get(categoryName = item))       
@@ -135,6 +162,34 @@ def newRecipe(request):
             'allIngredientCategory' : allIngredientCategory,
             'allIngredient' : allIngredient,
             'allUtensil' : allUtensil,
+            'message' : message,
+        }
+        
+        return HttpResponse(template.render(context, request))
+    
+    else:
+        return redirect('index') 
+    
+
+
+########################################
+#The function related to editing new Recipe 
+def editRecipe(request):
+    message = "Editing Recipe"
+    
+
+    
+    user_fname = ', Guest'
+    login_stat = True
+    if request.user.is_authenticated:
+        user_fname = ', ' + request.user.get_short_name()
+        login_stat = False
+        template = loader.get_template('recipeManager/editRecipe.html')
+        
+        
+        context = {
+            'loginStat' : login_stat,
+            'name' : user_fname,
             'message' : message,
         }
         
@@ -228,6 +283,33 @@ def newIngredient(request):
         return HttpResponse(template.render(context, request))
     else:
         return redirect('index') 
+    
+
+########################################
+#The function related to editing new Ingredient 
+def editIngredient(request):
+    message = "Editing Ingredient"
+
+    user_fname = ', Guest'
+    login_stat = True
+    if request.user.is_authenticated:
+        user_fname = ', ' + request.user.get_short_name()
+        login_stat = False
+    
+        
+            
+        template = loader.get_template('recipeManager/editIngredient.html')
+        
+        context = {
+            'loginStat' : login_stat,
+            'name' : user_fname,
+            'message' : message,
+        }
+        
+        return HttpResponse(template.render(context, request))
+    else:
+        return redirect('index') 
+
 
 ########################################
 #This function is used to show all utensil 
@@ -369,7 +451,7 @@ def profile(request):
             #username = request.POST['username']
             email = request.POST['email']
             password = request.POST['password']
-            print(password)
+            
             
             if User.objects.filter(email = email) and (User.objects.filter(email = email)[0].id != old_id): 
                 message ="This email address already exists!"

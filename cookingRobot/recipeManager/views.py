@@ -73,7 +73,6 @@ def index(request):
                 itemObj.raters = ast.literal_eval(str(itemObj.raters))
                 itemObj.save()
         
-        print(itemObj)
         
     template = loader.get_template('recipeManager/index.html')
     

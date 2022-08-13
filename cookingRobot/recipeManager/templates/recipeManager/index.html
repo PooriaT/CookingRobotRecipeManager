@@ -156,8 +156,17 @@
                                                             {% if not loginStat %}
                                                                 <form method="post" class = "w3-row ">
                                                                     {% csrf_token %}
-                                                                    <input class="w3-input w3-hover-grey w3-half w3-margin-right" type="number" step="0.1" style="width:20%" name="rating" min="0" max="5">
-                                                                    <button class="w3-bar-item w3-button w3-half w3-black" type="submit" style="width:20%" name="RateSubmit" value="rating">Rate</button>
+                                                                    {% if user_ID in item.raters.keys %}
+                                                                        {% for key, value in item.raters.items %}
+                                                                            {% if user_ID == key %}
+                                                                                <input class="w3-input w3-hover-grey w3-half w3-margin-right" type="number" step="0.1" style="width:20%" name="rating" value='{{value}}' min="0" max="5">
+                                                                            {% endif %}
+                                                                        {% endfor %}
+                                                                    {% else %}
+                                                                        <input class="w3-input w3-hover-grey w3-half w3-margin-right" type="number" step="0.1" style="width:20%" name="rating" value='0' min="0" max="5">
+                                                                    {% endif %}
+                                                                    
+                                                                    <button class="w3-bar-item w3-button w3-half w3-black" type="submit" style="width:20%" name="rateSubmit" value="{{ item.recipeID }}">Rate</button>
                                                                 </form> 
                                                             {% endif %}
                                                         </p>

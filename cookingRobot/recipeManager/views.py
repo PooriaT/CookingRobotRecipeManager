@@ -25,13 +25,14 @@ from .models import List
 def index(request):
     message = "No Result!"
     allRecipe = Recipe.objects.all()
-    
+    user_ID = ''
     
     user_fname = ', Guest'
     login_stat = True
     if request.user.is_authenticated:
         user_fname = ', ' + request.user.get_short_name()
         login_stat = False
+        user_ID = str(request.user.id)
     
     submittedValue = request.POST
     if bool(submittedValue):
@@ -48,12 +49,38 @@ def index(request):
                 allRecipe = allRecipe.filter(chefName__contains=searchFor)
             else:
                 allRecipe = {}
+        elif 'rateSubmit' in submittedValue:
+            userID = str(request.user.id)
+            recipeID = submittedValue['rateSubmit']
+            userRate = submittedValue['rating']
+            
+            itemObj = Recipe.objects.get(recipeID = recipeID)
+
+            if userID in itemObj.raters.keys():
+                if len(itemObj.raters.keys()) == 1:
+                    itemObj.rating = (itemObj.rating - float(itemObj.raters[userID]) + float(userRate))
+                else:
+                    itemObj.rating = ((itemObj.rating)*2 - float(itemObj.raters[userID]) + float(userRate))/2
+                itemObj.raters[userID] = userRate
+                itemObj.save()
+            else:
+                if itemObj.raters.keys():
+                    itemObj.rating  = (itemObj.rating + float(userRate))/2
+                else:
+                    itemObj.rating  = (itemObj.rating + float(userRate))
+                itemObj.numRater += 1
+                itemObj.raters[userID] = str(userRate)
+                itemObj.raters = ast.literal_eval(str(itemObj.raters))
+                itemObj.save()
+        
+        print(itemObj)
         
     template = loader.get_template('recipeManager/index.html')
     
     context = {
         'loginStat' : login_stat,
         'name' : user_fname,
+        'user_ID' : user_ID,
         'allRecipe': allRecipe,
         'message' : message,
     }
